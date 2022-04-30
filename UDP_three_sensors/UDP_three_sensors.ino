@@ -10,6 +10,7 @@
 #define WIFI_PASS "allwewannadoiseatyourbrains" 
 #define TARGET_IP "192.168.1.14"
 #define TARGET_PORT 56200
+#define SIDE "R"
 /* Sensor code -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
 
 struct XYZ {
@@ -106,7 +107,8 @@ void loop() {
     sensor3Values = getSensValues(sensor3);
 
     char message[256];
-    snprintf(message,sizeof(message),"R;%s;%f;%f;%f;%f;%f;%f;%f;%f;%f",
+    snprintf(message,sizeof(message),"%s;%s;%f;%f;%f;%f;%f;%f;%f;%f;%f",
+    SIDE,
     timeClient.getFormattedTime(),
     sensor1Values.x,sensor1Values.y,sensor1Values.z,
     sensor2Values.x,sensor2Values.y,sensor2Values.z,
