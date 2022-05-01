@@ -47,6 +47,3 @@ class TestModule(unittest.TestCase):
 
         outerRot = getRotation(m1Pos,m2Pos,m3Pos)
         print(outerRot)
-
-
-

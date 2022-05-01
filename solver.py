@@ -21,7 +21,7 @@ def getTranslation(m1, m2, m3) -> np.array:
     return  (m1+m2+m3) / 3
 
 def getRotation(m1, m2, m3) -> np.array:
-
+    #https://math.stackexchange.com/questions/2249307/orientation-of-a-3d-plane-using-three-points
     N = np.cross((m1-m3),(m2-m3))
     U = N/ np.linalg.norm(N)
 
