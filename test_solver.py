@@ -18,9 +18,9 @@ class TestModule(unittest.TestCase):
         vs3m3 = transformToRefrenceFrame(s3Val,getTransmat(3))
 
         print(vs1m1)
-        self.assertAlmostEqual(vs1m1.any(),np.array([-10,0,0]).any())
-        self.assertAlmostEqual(vs2m2.all(),np.array([8.660,-5,0]).all())
-        self.assertAlmostEqual(vs3m3.all(),np.array([8.660,5,0]).all())
+        np.testing.assert_array_almost_equal(vs1m1,np.array([-10,0,0]))
+        np.testing.assert_array_almost_equal(vs2m2,np.array([8.660,-5,0]))
+        np.testing.assert_array_almost_equal(vs3m3,np.array([8.660,5,0]))
 
         sf12 = getScale(getSp(1),vs1m1,getMp(1),getSp(2),vs2m2,getMp(2))
 
