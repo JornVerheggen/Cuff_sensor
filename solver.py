@@ -45,7 +45,7 @@ class Solver:
             s1Input = self.normalizeInputData(s1Input,multiplier)
             s2Input = self.normalizeInputData(s2Input,multiplier)
             s3Input = self.normalizeInputData(s3Input,multiplier)
-        
+
         v1 =  self.transformToRefrenceFrame(s1Input,self.rm1)
         v2 =  self.transformToRefrenceFrame(s2Input,self.rm2)
         v3 =  self.transformToRefrenceFrame(s3Input,self.rm3)
@@ -69,6 +69,7 @@ class Solver:
     def normalizeInputData(self, xyz, multiplier=50000) -> np.array:
         xyzPosNeg = np.absolute(xyz)/xyz
         xyz = 1/np.sqrt(np.absolute(xyz)) * xyzPosNeg * multiplier
+        return xyz
 
     def transformToRefrenceFrame(self,xyz, transformMatrix) -> np.array:
         return transformMatrix @ xyz

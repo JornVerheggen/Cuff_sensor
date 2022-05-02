@@ -77,6 +77,8 @@ def init():
     outer = vp.compound([outerRing, mag1, mag2, mag3])
 
 
-def setOuterAxis(x, y, z):
+def setPosition(xyz):
+    outer.pos = vp.vector(xyz[0], xyz[1], xyz[2])
 
-    outer.axis = vp.vector(x, y, z)
+def setRotation(xyz):
+    outer.axis = vp.vector(xyz[0], xyz[1], xyz[2])
