@@ -25,7 +25,7 @@ def init():
     )
 
     sens1 = vp.box(
-        pos=vp.vector(74, 0, 0),
+        pos=vp.vector(-74, 0, 0),
         length=3,
         height=8,
         width=8,
@@ -33,23 +33,23 @@ def init():
         color=vp.color.yellow)
 
     sens2 = vp.box(
-        pos=vp.vector(-37, 64, 0),
+        pos=vp.vector(37, 64, 0),
         length=3,
         height=8,
         width=8,
-        axis=vp.vector(-0.5, 0.866, 0),
+        axis=vp.vector(0.5, 0.866, 0),
         color=vp.color.cyan)
 
     sens3 = vp.box(
-        pos=vp.vector(-37, -64, 0),
+        pos=vp.vector(37, -64, 0),
         length=3,
         height=8,
         width=8,
-        axis=vp.vector(-0.5, -0.866, 0),
+        axis=vp.vector(0.5, -0.866, 0),
         color=vp.color.magenta)
 
     mag1 = vp.cylinder(
-        pos=vp.vector(88, 0, 0),
+        pos=vp.vector(-88, 0, 0),
         length=4,
         height=8,
         width=8,
@@ -57,19 +57,19 @@ def init():
         color=vp.color.yellow)
 
     mag2 = vp.cylinder(
-        pos=vp.vector(-44, 76.2, 0),
+        pos=vp.vector(44, 76.2, 0),
         length=4,
         height=8,
         width=8,
-        axis=vp.vector(-0.5, 0.866, 0),
+        axis=vp.vector(0.5, 0.866, 0),
         color=vp.color.cyan)
 
     mag3 = vp.cylinder(
-        pos=vp.vector(-44, -76.2, 0),
+        pos=vp.vector(44, -76.2, 0),
         length=4,
         height=8,
         width=8,
-        axis=vp.vector(-0.5, -0.866, 0),
+        axis=vp.vector(0.5, -0.866, 0),
         color=vp.color.magenta)
 
     inner = vp.compound([innerRing, sens1, sens2, sens3])

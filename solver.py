@@ -42,13 +42,21 @@ class Solver:
 
     def solve(self, s1Input,s2Input,s3Input,multiplier=50000,normalize=True):
         if normalize:
-            s1Input = self.normalizeInputData(s1Input,multiplier)
-            s2Input = self.normalizeInputData(s2Input,multiplier)
-            s3Input = self.normalizeInputData(s3Input,multiplier)
+            s1NormInput = s1Input
+            s1NormInput[2] = (-1 * s1NormInput[2]) + 60000
+            #print('here'+str(float((-1 * s1NormInput[2]) + 60000)))
+            s2NormInput = s2Input
+            s3NormInput = s3Input
+        else: 
+            s1NormInput = s1Input            
+            s2NormInput = s2Input            
+            s3NormInput = s3Input
 
-        v1 =  self.transformToRefrenceFrame(s1Input,self.rm1)
-        v2 =  self.transformToRefrenceFrame(s2Input,self.rm2)
-        v3 =  self.transformToRefrenceFrame(s3Input,self.rm3)
+        #print(f"S1 normalization: {s1Input[2]} --> {s1NormInput[2]}")
+
+        v1 =  self.transformToRefrenceFrame(s1NormInput,self.rm1)
+        v2 =  self.transformToRefrenceFrame(s2NormInput,self.rm2)
+        v3 =  self.transformToRefrenceFrame(s3NormInput,self.rm3)
 
         sf12 = self.getScaleFactor(self.sp1,v1,self.mp1,self.sp2,v2,self.mp2)
         sf23 = self.getScaleFactor(self.sp2,v2,self.mp2,self.sp3,v3,self.mp3)
@@ -68,8 +76,8 @@ class Solver:
 
     def normalizeInputData(self, xyz, multiplier=50000) -> np.array:
         xyzPosNeg = np.absolute(xyz)/xyz
-        xyz = 1/np.sqrt(np.absolute(xyz)) * xyzPosNeg * multiplier
-        return xyz
+        res = 1/np.sqrt(np.absolute(xyz)) * xyzPosNeg * multiplier
+        return res
 
     def transformToRefrenceFrame(self,xyz, transformMatrix) -> np.array:
         return transformMatrix @ xyz
@@ -93,4 +101,4 @@ class Solver:
         #https://math.stackexchange.com/questions/2249307/orientation-of-a-3d-plane-using-three-points
         N = np.cross((m1-m3),(m2-m3))
         U = N/ np.linalg.norm(N)
-        return np.pi/2 - np.arccos(U)
+        return np.pi/2 - np.arcsin(U)
