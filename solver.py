@@ -39,8 +39,14 @@ class Solver:
                 np.array([[np.cos(np.pi/2),0,np.sin(np.pi/2)],
                 [0,1,0],
                 [-np.sin(np.pi/2),0,np.cos(np.pi/2)]])
+            
+            #90deg y-axis
+        self.rm4 = np.array([
+                [np.cos(np.pi/2),0,np.sin(np.pi/2)],
+                [0,1,0],
+                [-np.sin(np.pi/2),0,np.cos(np.pi/2)]])
 
-    def solve(self, s1Input,s2Input,s3Input,multiplier=50000,normalize=True):
+    def solve(self, s1Input,s2Input,s3Input,normalize=True):
         if normalize:
             #Invert the z-axis so that value increases as magnet goes farther away from the sensor
             s1NormInput = s1Input
@@ -103,4 +109,7 @@ class Solver:
         #https://math.stackexchange.com/questions/2249307/orientation-of-a-3d-plane-using-three-points
         N = np.cross((m1-m3),(m2-m3))
         U = N/ np.linalg.norm(N)
-        return np.pi/2 - np.arcsin(U)
+        rotations = np.arcsin(U)
+
+        #transform to vpython rotation standard; normal vector (1,0,0)
+        return self.rm4 @ rotations

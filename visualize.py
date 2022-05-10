@@ -5,6 +5,8 @@ import time
 
 
 def init():
+    scene = vp.canvas(background=vp.vec(0.7,0.7,0.7))
+
     xaxis = vp.box(pos=vp.vector(15, 0, 0), length=30,
                    height=1, width=1, color=vp.color.red)
     yaxis = vp.box(pos=vp.vector(0, 15, 0), length=1,

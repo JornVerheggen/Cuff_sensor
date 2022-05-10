@@ -25,10 +25,7 @@ while True:
     s2Input = np.array([float(row[5]),float(row[6]),float(row[7])],dtype=np.float32)
     s3Input = np.array([float(row[8]),float(row[9]),float(row[10])],dtype=np.float32)
 
-    print(s1Input)
-    trans, rot = solver.solve(s1Input,s2Input,s3Input,multiplier=10000,normalize= True)
-
-
+    trans, rot = solver.solve(s1Input,s2Input,s3Input,normalize= True)
 
     vis.setPosition(trans)
-    #vis.setRotation(rot)
+    vis.setRotation(rot)
