@@ -6,13 +6,13 @@
 #include <WiFiUdp.h>
 #include <NTPClient.h>
 
-#define WIFI_SSID "VU-ResearchDevice-net"
-#define WIFI_PASS "Re@se6rch4VU" 
-#define TARGET_IP "10.15.3.38"
+//#define WIFI_SSID "VU-ResearchDevice-net"
+//#define WIFI_PASS "Re@se6rch4VU" 
+//#define TARGET_IP "10.15.3.38"
 
-//#define WIFI_SSID "TP-Link_2140"
-//define WIFI_PASS "83563553" 
-//#define TARGET_IP "192.168.0.232"
+#define WIFI_SSID "TP-Link_2140"
+#define WIFI_PASS "83563553" 
+#define TARGET_IP "192.168.0.232"
 
 #define TARGET_PORT 56200
 #define SIDE "L"
