@@ -42,11 +42,13 @@ class Solver:
 
     def solve(self, s1Input,s2Input,s3Input,multiplier=50000,normalize=True):
         if normalize:
+            #Invert the z-axis so that value increases as magnet goes farther away from the sensor
             s1NormInput = s1Input
-            s1NormInput[2] = (-1 * s1NormInput[2]) + 60000
-            #print('here'+str(float((-1 * s1NormInput[2]) + 60000)))
+            s1NormInput[2] =  (s1Input[2] * -1) + 53000
             s2NormInput = s2Input
+            s2NormInput[2] =  (s1Input[2] * -1) + 53000
             s3NormInput = s3Input
+            s3NormInput[2] =  (s1Input[2] * -1) + 53000
         else: 
             s1NormInput = s1Input            
             s2NormInput = s2Input            
