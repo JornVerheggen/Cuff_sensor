@@ -14,7 +14,7 @@
 #define WIFI_PASS "83563553" 
 #define TARGET_IP "192.168.0.232"
 
-#define TARGET_PORT 56200
+#define TARGET_PORT 56201
 #define SIDE "L"
 /* Sensor code -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
 

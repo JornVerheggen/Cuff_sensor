@@ -3,15 +3,10 @@ import visualize as vis
 from solver import Solver
 import numpy as np 
 
-import random as r
-
-
 vis.init()
-
 solver = Solver()
 
-UDP_IP = "192.168.1.21"
-UDP_PORT = 56200
+UDP_PORT = 56201
 
 sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM) # UDP
 sock.bind(('', UDP_PORT))
