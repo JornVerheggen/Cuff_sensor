@@ -1,0 +1,21 @@
+Cuff
+Extremity
+Sensor
+Magnetic
+Spacial
+Translation
+Rotation
+Sensor
+Wrist
+Intuitive
+Interaction
+Interactive
+Interface
+
+
+TRES.
+Translation Rotation Extrimeity sensor
+
+Its.
+Intuitive Transformation Sensor
+
