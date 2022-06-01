@@ -14,7 +14,8 @@
 #define WIFI_PASS "83563553" 
 #define TARGET_IP "192.168.0.232"
 
-#define TARGET_PORT 56201
+#define TARGET_PORT 56200
+#define VIZ_PORT 56201
 #define SIDE "L"
 /* Sensor code -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
 
@@ -38,7 +39,7 @@ Adafruit_MLX90393 initSensor(Adafruit_MLX90393 sensor, int address) {
   sensor.setResolution(MLX90393_Z, MLX90393_RES_19);
 
   // Set oversampling
-  sensor.setOversampling(MLX90393_OSR_3);
+  sensor.setOversampling(MLX90393_OSR_1);
 
   // Set digital filtering
   sensor.setFilter(MLX90393_FILTER_6);
@@ -121,6 +122,11 @@ void loop() {
     
     // Send packet
     UDP.beginPacket(TARGET_IP, TARGET_PORT);
+    UDP.write(message);
+    UDP.endPacket();
+
+        // Send packet
+    UDP.beginPacket(TARGET_IP, VIZ_PORT);
     UDP.write(message);
     UDP.endPacket();
 }

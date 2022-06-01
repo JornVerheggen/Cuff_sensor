@@ -13,7 +13,7 @@
 void setup()
 {
   Wire.begin(); // Wire communication begin
-  Serial.begin(115200); // The baudrate of Serial monitor is set in 9600
+  Serial.begin(115200); // The baudrate of Serial monitor is set in 115200
   while (!Serial); // Waiting for Serial Monitor
   Serial.println("\nI2C Scanner");
 }

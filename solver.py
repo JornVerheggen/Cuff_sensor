@@ -15,30 +15,30 @@ class Solver:
 
         #define sensor rotation matrices
             # 90deg y-axis -> 180deg z-axis
-        self.rm1 = np.array(
+        self.rm1 = np.matmul(np.array(
                 [[np.cos(np.pi), -np.sin(np.pi), 0],
                 [np.sin(np.pi),   np.cos(np.pi), 0],
-                [0., 0., 1.]]) @ \
+                [0., 0., 1.]]) , \
                 np.array([[np.cos(np.pi/2),0,np.sin(np.pi/2)],
                 [0,1,0],
-                [-np.sin(np.pi/2),0,np.cos(np.pi/2)]])
+                [-np.sin(np.pi/2),0,np.cos(np.pi/2)]]))
             # 90deg y-axis -> -60deg z-axis
-        self.rm2 = np.array(
+        self.rm2 = np.matmul(np.array(
                 [[np.cos(-np.pi/3), -np.sin(-np.pi/3), 0],
                 [np.sin(-np.pi/3),   np.cos(-np.pi/3), 0],
-                [0., 0., 1.]]) @ \
+                [0., 0., 1.]]) , \
                 np.array([[np.cos(np.pi/2),0,np.sin(np.pi/2)],
                 [0,1,0],
-                [-np.sin(np.pi/2),0,np.cos(np.pi/2)]])
+                [-np.sin(np.pi/2),0,np.cos(np.pi/2)]]))
 
             # 90deg y-axis -> 60deg z-axis
-        self.rm3 = np.array(
+        self.rm3 = np.matmul(np.array(
                 [[np.cos(np.pi/3), -np.sin(np.pi/3), 0],
                 [np.sin(np.pi/3),   np.cos(np.pi/3), 0],
-                [0., 0., 1.]]) @ \
+                [0., 0., 1.]]) , \
                 np.array([[np.cos(np.pi/2),0,np.sin(np.pi/2)],
                 [0,1,0],
-                [-np.sin(np.pi/2),0,np.cos(np.pi/2)]])
+                [-np.sin(np.pi/2),0,np.cos(np.pi/2)]]))
             
             #90deg y-axis
         self.rm4 = np.array([
@@ -82,34 +82,34 @@ class Solver:
 
         return (outerPos,outerRot)
 
-    def normalizeInputData(self, xyz, multiplier=50000) -> np.array:
+    def normalizeInputData(self, xyz, multiplier=50000):
         xyzPosNeg = np.absolute(xyz)/xyz
         res = 1/np.sqrt(np.absolute(xyz)) * xyzPosNeg * multiplier
         return res
 
-    def transformToRefrenceFrame(self,xyz, transformMatrix) -> np.array:
-        return transformMatrix @ xyz
+    def transformToRefrenceFrame(self,xyz, transformMatrix):
+        return np.matmul(transformMatrix, xyz)
 
-    def getScaleFactor(self, sa, vsama, ma, sb, vsbmb, mb) -> np.array:
+    def getScaleFactor(self, sa, vsama, ma, sb, vsbmb, mb):
         factors = (-sa - (mb-ma) + sb) / (vsama-vsbmb)
         mask = np.isclose(factors,0)
         factors[mask] = np.nan
         return factors
 
-    def getMeanScaleFactor(self, sf12,sf23,sf31) -> float:
+    def getMeanScaleFactor(self, sf12,sf23,sf31):
         return np.nanmean(np.concatenate((sf12,sf23,sf31)))
 
-    def getMagPosition(self, sensorPos, vector, sf) -> np.array:
+    def getMagPosition(self, sensorPos, vector, sf):
         return sensorPos + vector * sf
 
-    def getTranslation(self, m1, m2, m3) -> np.array:
+    def getTranslation(self, m1, m2, m3):
         return  (m1+m2+m3) / 3
 
-    def getRotation(self, m1, m2, m3) -> np.array:
+    def getRotation(self, m1, m2, m3):
         #https://math.stackexchange.com/questions/2249307/orientation-of-a-3d-plane-using-three-points
         N = np.cross((m1-m3),(m2-m3))
         U = N/ np.linalg.norm(N)
         rotations = np.arcsin(U)
 
         #transform to vpython rotation standard; normal vector (1,0,0)
-        return self.rm4 @ rotations
+        return np.matmul(self.rm4 , rotations)

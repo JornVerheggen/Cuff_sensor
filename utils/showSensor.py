@@ -1,7 +1,10 @@
+import sys
+sys.path.insert(0,'C:/Users/jorn-/Documents/school/y2/thesis/cuffling/code/Cuff_sensor')
 import socket
 import visualize as vis
 from solver import Solver
 import numpy as np 
+
 
 vis.init()
 solver = Solver()
@@ -23,4 +26,4 @@ while True:
     trans, rot = solver.solve(s1Input,s2Input,s3Input,normalize= True)
 
     vis.setPosition(trans)
-    vis.setRotation(rot)
+    #vis.setRotation(rot)

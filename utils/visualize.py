@@ -1,7 +1,7 @@
 import vpython as vp
-
 import numpy as np
 import time
+import sys
 
 
 def init():
@@ -84,3 +84,4 @@ def setPosition(xyz):
 
 def setRotation(xyz):
     outer.axis = vp.vector(xyz[0], xyz[1], xyz[2])
+

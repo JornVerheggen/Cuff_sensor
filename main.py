@@ -1,38 +1,51 @@
-import socket
-import visualize as vis
-from solver import Solver
+from re import L
 import numpy as np 
+import sys
+from solver import Solver
+from naoController import naoController
+import time
+import math
+from scipy.spatial.transform import Rotation as R
 
-vis.init()
-solver = Solver()
+def RotMat(axis,rad):
 
-UDP_PORT = 56201
+    if axis == 'x':
+        return np.array([[1.,0.,0.],
+                        [0.,np.cos(rad),-np.sin(rad)],
+                        [0.,np.sin(rad),np.cos(rad)]])
+    elif axis == 'y':
+        return np.array([[np.cos(rad),0,np.sin(rad)],
+                        [0,1,0],
+                        [-np.sin(rad),0,np.cos(rad)]])
+    elif axis == 'z':
+        return np.array([[np.cos(rad), -np.sin(rad), 0],
+                        [np.sin(rad),   np.cos(rad), 0],
+                        [0., 0., 1.]])
 
-sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM) # UDP
-sock.bind(('', UDP_PORT))
 
-with socket.socket() as s: 
-    s.connect(('localhost', 5678))
+solver = Solver() #Create solver object
+naoController = naoController() #Create naoController object
 
-    while True:
-        data, addr = sock.recvfrom(255) # buffer size is 1024 bytes
-        data = data.decode('utf-8')
-        row = data.split(';')
 
-        s1Input = np.array([float(row[2]),float(row[3]),float(row[4])],dtype=np.float32)
-        s2Input = np.array([float(row[5]),float(row[6]),float(row[7])],dtype=np.float32)
-        s3Input = np.array([float(row[8]),float(row[9]),float(row[10])],dtype=np.float32)
+#move robot arm to front to start moving
+naoController.setup()
 
-        trans, rot = solver.solve(s1Input,s2Input,s3Input,normalize= True)
 
-        vis.setPosition(trans)
-        vis.setRotation(rot)
+while True:
+    #Get data from sensor
+    side,time,s1Input,s2Input,s3Input = getData(UDP_PORT)
+    sensTrans, sensRot = solver.solve(s1Input,s2Input,s3Input,normalize= True)
+    sensTrans /=1000
 
-        message = ';'.join([str(i) for i in trans])
+    # #Get transformation of left arm with respect to torso frame
+    lHandT = naoController.getOrientation('LArm')
+    lHandT = np.array(lHandT.toVector()).reshape(4,4)
+    lHandR = lHandT[:3].T[:3].T
+    wristYaw =  naoController.getlHandRotation()
+    lArmR = np.matmul(RotMat('x',-wristYaw),lHandR)
 
-        message += 'x'
+    sens2torsoRm = np.matmul(np.matmul(lArmR,RotMat('y',-np.pi/2)),RotMat('z',np.pi/2))
+    
+    newPos =  np.matmul(sens2torsoRm,sensTrans)
 
-        # Create a socket object
-        print(f"sending: {message}")
-
-        s.sendall(message.encode('utf-8'))
+    naoController.relativeMove(newPos)
