@@ -1,0 +1,1 @@
+C:\Users\jorn-\Documents\school\y2\thesis\cuffling\code\Cuff_sensor\CSenv\Scripts\python.exe C:\Users\jorn-\Documents\school\y2\thesis\cuffling\code\Cuff_sensor\utils\showSensor.py
