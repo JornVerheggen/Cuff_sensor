@@ -1,51 +1,64 @@
-from re import L
 import numpy as np 
 import sys
 from solver import Solver
 from naoController import naoController
-import time
+from dataIO import dataIO
+import time as t
 import math
-from scipy.spatial.transform import Rotation as R
 
 def RotMat(axis,rad):
 
     if axis == 'x':
-        return np.array([[1.,0.,0.],
-                        [0.,np.cos(rad),-np.sin(rad)],
-                        [0.,np.sin(rad),np.cos(rad)]])
+        return np.array([[1.,0.,0.,0],
+                        [0.,np.cos(rad),-np.sin(rad),0],
+                        [0.,np.sin(rad),np.cos(rad),0],
+                        [0,0,0,1]])
     elif axis == 'y':
-        return np.array([[np.cos(rad),0,np.sin(rad)],
-                        [0,1,0],
-                        [-np.sin(rad),0,np.cos(rad)]])
+        return np.array([[np.cos(rad),0,np.sin(rad),0],
+                        [0,1,0,0],
+                        [-np.sin(rad),0,np.cos(rad),0],
+                        [0,0,0,1]])
     elif axis == 'z':
-        return np.array([[np.cos(rad), -np.sin(rad), 0],
-                        [np.sin(rad),   np.cos(rad), 0],
-                        [0., 0., 1.]])
+        return np.array([[np.cos(rad), -np.sin(rad), 0,0],
+                        [np.sin(rad),   np.cos(rad), 0,0],
+                        [0., 0., 1.,0],
+                        [0,0,0,1]])
+
+if __name__ == '__main__':
+    UDP_PORT = 56200
+    dataIO = dataIO(UDP_PORT) #create dataIO object
+    dataIO.startProcess() #start data reading tread
+
+    solver = Solver() #Create solver object
+
+    naoController = naoController() #Create naoController object
+    #move robot arm to front to start moving
+    naoController.setup()
 
 
-solver = Solver() #Create solver object
-naoController = naoController() #Create naoController object
+    while True:
+        #Get data from sensor
+        side,time,s1Input,s2Input,s3Input = dataIO.getFormattedData()
+        print(time)
+        sensT = solver.solve(s1Input,s2Input,s3Input,normalize= True)
 
+        #transform from mm to m
+        sensT[0,3] = sensT[0,3] /800
+        sensT[1,3] = sensT[1,3] /800
+        sensT[2,3] = sensT[2,3] /800
 
-#move robot arm to front to start moving
-naoController.setup()
+        #Get transformation of left arm with respect to torso frame
+        lHandT = naoController.getOrientation('LArm')
 
+        # remove the left hand rotation from the transformation to get the arm transform
+        wristYaw =  naoController.getlHandRotation()
+        lArmT = np.matmul(lHandT,RotMat('x',-wristYaw))
 
-while True:
-    #Get data from sensor
-    side,time,s1Input,s2Input,s3Input = getData(UDP_PORT)
-    sensTrans, sensRot = solver.solve(s1Input,s2Input,s3Input,normalize= True)
-    sensTrans /=1000
+        sens2torsoRm = np.matmul(lArmT,np.matmul(RotMat('y',-np.pi/2),RotMat('z',np.pi/2)))
 
-    # #Get transformation of left arm with respect to torso frame
-    lHandT = naoController.getOrientation('LArm')
-    lHandT = np.array(lHandT.toVector()).reshape(4,4)
-    lHandR = lHandT[:3].T[:3].T
-    wristYaw =  naoController.getlHandRotation()
-    lArmR = np.matmul(RotMat('x',-wristYaw),lHandR)
+        newT = np.matmul(RotMat('z', wristYaw),sensT)        
+        newT =  np.matmul(sens2torsoRm,newT)
+        # print(sens2torsoRm)
+        # print(newT)
 
-    sens2torsoRm = np.matmul(np.matmul(lArmR,RotMat('y',-np.pi/2)),RotMat('z',np.pi/2))
-    
-    newPos =  np.matmul(sens2torsoRm,sensTrans)
-
-    naoController.relativeMove(newPos)
+        naoController.relativeMove(newT)

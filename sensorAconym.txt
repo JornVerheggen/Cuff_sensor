@@ -2,16 +2,21 @@ Cuff
 Extremity
 Sensor
 Magnetic
+Motion
 Spacial
 Translation
 Rotation
-Sensor
+Ring
+Robot
 Wrist
 Intuitive
 Interaction
 Interactive
 Interface
+kineasthetic
 
+LIMBS.
+local intuitive motion based sensor
 
 TRES.
 Translation Rotation Extrimeity sensor
@@ -19,3 +24,5 @@ Translation Rotation Extrimeity sensor
 Its.
 Intuitive Transformation Sensor
 
+IRIS.
+Intuitive Robotic Interaction Sensor

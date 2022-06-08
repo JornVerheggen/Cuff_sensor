@@ -5,6 +5,7 @@
 import motion
 import almath
 from naoqi import ALProxy
+import numpy as np
 
 class naoController:
 
@@ -38,22 +39,17 @@ class naoController:
 
         self.motionProxy.transformInterpolations(self.effector, self.frame, path, self.axisMask, times)
     
-    def relativeMove(self,xyz):
-        currentTf = self.motionProxy.getTransform(self.effector, self.frame, self.useSensorValues)
-        targetTf  = almath.Transform(currentTf)
-        targetTf.r1_c4 += float(xyz[0]) # x
-        targetTf.r2_c4 += float(xyz[1]) # y
-        targetTf.r3_c4 += float(xyz[2]) # z
+    def relativeMove(self,transform):
+        transform = transform.reshape((16,))
+        transform = [float(x) for x in transform]
+        path = [transform]
+        times      = [.2] # seconds
 
-        path = []
-        path.append(list(targetTf.toVector()))
-
-        times      = [.1] # seconds
         self.motionProxy.transformInterpolations(self.effector, self.frame, path, self.axisMask, times)
     
     def getOrientation(self,A):
         #chainName = A, worldFrame =1, useSensors = True
-        return almath.Transform(self.motionProxy.getTransform(A, self.frame, True))
+        return np.array(self.motionProxy.getTransform(A, self.frame, True)).reshape((4,4))
     
     def getlHandRotation(self):
         return self.memoryProxy.getData("Device/SubDeviceList/LWristYaw/Position/Sensor/Value")   

@@ -1,12 +1,13 @@
 import sys
 sys.path.insert(0,'C:/Users/jorn-/Documents/school/y2/thesis/cuffling/code/Cuff_sensor')
 import socket
-import visualize as vis
+from visualize import Viz
 from solver import Solver
 import numpy as np 
 
 
-vis.init()
+
+vis = Viz()
 solver = Solver()
 
 UDP_PORT = 56201
@@ -23,7 +24,12 @@ while True:
     s2Input = np.array([float(row[5]),float(row[6]),float(row[7])],dtype=np.float32)
     s3Input = np.array([float(row[8]),float(row[9]),float(row[10])],dtype=np.float32)
 
-    trans, rot = solver.solve(s1Input,s2Input,s3Input,normalize= True)
+    trans,aAngle,magPositions = solver.solve( s1Input,
+                                                s2Input,
+                                                s3Input,
+                                                normalize= True, 
+                                                visualisationData = True)
 
     vis.setPosition(trans)
-    #vis.setRotation(rot)
+    vis.setRotation(aAngle)
+    vis.setMagPositions(magPositions)
