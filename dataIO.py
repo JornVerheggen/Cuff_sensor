@@ -2,7 +2,6 @@ import time
 from multiprocessing import Process, Queue
 import numpy as np
 import socket
-import os
 
 class dataIO:
     """

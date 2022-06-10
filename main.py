@@ -43,9 +43,9 @@ if __name__ == '__main__':
         sensT = solver.solve(s1Input,s2Input,s3Input,normalize= True)
 
         #transform from mm to m
-        sensT[0,3] = sensT[0,3] /800
-        sensT[1,3] = sensT[1,3] /800
-        sensT[2,3] = sensT[2,3] /800
+        sensT[0,3] = sensT[0,3] /1000
+        sensT[1,3] = sensT[1,3] /1000
+        sensT[2,3] = sensT[2,3] /1000
 
         #Get transformation of left arm with respect to torso frame
         lHandT = naoController.getOrientation('LArm')
@@ -61,4 +61,4 @@ if __name__ == '__main__':
         # print(sens2torsoRm)
         # print(newT)
 
-        naoController.relativeMove(newT)
+        naoController.moveTo(newT)
