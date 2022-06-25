@@ -20,21 +20,29 @@ class naoController:
         self.useSensorValues = False
 
 
-    def setup(self,stiff = True):
+    def setup(self,stiff = True, startingPosition = None):
         # Wake up robot
         self.motionProxy.wakeUp()
         # Send robot to Stand Init
         self.postureProxy.goToPosture("StandInit", 0.5)
 
         path = []
-        currentTf = self.motionProxy.getTransform(self.effector, self.frame, self.useSensorValues)
-        targetTf  = almath.Transform(currentTf)
-        targetTf.r1_c4 += 0.1 # x
-        targetTf.r3_c4 += 0.18 # z
 
-        path.append(list(targetTf.toVector()))
+        if startingPosition is None:
+            targetTf = np.identity(4)
 
-        times      = [2.0] # seconds
+            targetTf[0,3] = 0.218
+            targetTf[1,3] = 0.113
+            targetTf[2,3] = 0.11231
+        
+        else:
+            targetTf = startingPosition
+
+        targetTf = targetTf.reshape((16,))
+        targetTf = [float(x) for x in targetTf]
+        path = [targetTf]
+
+        times = [3.0] # seconds
 
         self.motionProxy.transformInterpolations(self.effector, self.frame, path, self.axisMask, times)
 

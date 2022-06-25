@@ -5,8 +5,6 @@ from visualize import Viz
 from solver import Solver
 import numpy as np 
 
-
-
 vis = Viz()
 solver = Solver()
 
@@ -16,7 +14,7 @@ sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM) # UDP
 sock.bind(('', UDP_PORT))
 
 while True:
-    data, addr = sock.recvfrom(255) # buffer size is 1024 bytes
+    data, addr = sock.recvfrom(255)
     data = data.decode('utf-8')
     row = data.split(';')
 
@@ -27,9 +25,12 @@ while True:
     trans,aAngle,magPositions = solver.solve( s1Input,
                                                 s2Input,
                                                 s3Input,
-                                                normalize= True, 
+                                                normalize= False, 
                                                 visualisationData = True)
 
     vis.setPosition(trans)
     vis.setRotation(aAngle)
     vis.setMagPositions(magPositions)
+
+    if np.all(solver.offset) == np.all(np.array([0.0,0.0,0.0])):
+        solver.setOffset(s1Input,s2Input,s3Input)

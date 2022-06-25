@@ -35,30 +35,27 @@ if __name__ == '__main__':
     #move robot arm to front to start moving
     naoController.setup()
 
+    #Create offset
+    _,_,s1Input,s2Input,s3Input = dataIO.getFormattedData()
+    solver.setOffset(s1Input,s2Input,s3Input)
 
     while True:
         #Get data from sensor
         side,time,s1Input,s2Input,s3Input = dataIO.getFormattedData()
         print(time)
-        sensT = solver.solve(s1Input,s2Input,s3Input,normalize= True)
-
-        #transform from mm to m
-        sensT[0,3] = sensT[0,3] /1000
-        sensT[1,3] = sensT[1,3] /1000
-        sensT[2,3] = sensT[2,3] /1000
+        sensT = solver.solve(s1Input,s2Input,s3Input,normalize= False)
 
         #Get transformation of left arm with respect to torso frame
-        lHandT = naoController.getOrientation('LArm')
+        torso2Hand = naoController.getOrientation('LArm')
 
         # remove the left hand rotation from the transformation to get the arm transform
         wristYaw =  naoController.getlHandRotation()
-        lArmT = np.matmul(lHandT,RotMat('x',-wristYaw))
+        torso2Arm = np.matmul(torso2Hand,RotMat('x',-wristYaw))
 
-        sens2torsoRm = np.matmul(lArmT,np.matmul(RotMat('y',-np.pi/2),RotMat('z',np.pi/2)))
+        torso2Sens = np.matmul(torso2Arm,np.matmul(RotMat('y',-np.pi/2),RotMat('z',np.pi/2)))
 
-        newT = np.matmul(RotMat('z', wristYaw),sensT)        
-        newT =  np.matmul(sens2torsoRm,newT)
+        # newT = np.matmul(RotMat('z', wristYaw),sensT)        
+        newT =  np.matmul(torso2Sens,sensT)
         # print(sens2torsoRm)
         # print(newT)
-
         naoController.moveTo(newT)

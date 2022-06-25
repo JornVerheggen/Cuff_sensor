@@ -10,13 +10,13 @@
 //#define WIFI_PASS "Re@se6rch4VU" 
 //#define TARGET_IP "10.15.3.38"
 
-#define WIFI_SSID "TP-Link_2140"
-#define WIFI_PASS "83563553" 
-#define TARGET_IP "192.168.0.232"
+//#define WIFI_SSID "TP-Link_2140"
+//#define WIFI_PASS "83563553" 
+//#define TARGET_IP "192.168.0.232"
 
-//#define WIFI_SSID "Hey Tom its Bob"
-//#define WIFI_PASS "allwewannadoiseatyourbrains" 
-//#define TARGET_IP "192.168.1.14"
+#define WIFI_SSID "Hey Tom its Bob"
+#define WIFI_PASS "allwewannadoiseatyourbrains" 
+#define TARGET_IP "192.168.1.14"
 
 #define TARGET_PORT 56200
 #define VIZ_PORT 56201

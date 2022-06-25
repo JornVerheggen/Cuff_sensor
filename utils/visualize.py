@@ -7,79 +7,79 @@ class Viz:
     def __init__(self):
         self.scene = vp.canvas(background=vp.vec(0.7,0.7,0.7))
 
-        xaxis = vp.box(pos=vp.vector(15, 0, 0), length=30,
-                    height=1, width=1, color=vp.color.red)
-        yaxis = vp.box(pos=vp.vector(0, 15, 0), length=1,
-                    height=30, width=1, color=vp.color.green)
-        zaxis = vp.box(pos=vp.vector(0, 0, 15), length=1,
-                    height=1, width=30, color=vp.color.blue)
+        xaxis = vp.box(pos=vp.vector(.015, 0, 0), length=.03,
+                    height=.001, width=0.001, color=vp.color.red)
+        yaxis = vp.box(pos=vp.vector(0, .015, 0), length=.001,
+                    height=.03, width=0.001, color=vp.color.green)
+        zaxis = vp.box(pos=vp.vector(0, 0, .015), length=.001,
+                    height=.001, width=.03, color=vp.color.blue)
 
         innerRing = vp.ring(
             pos=vp.vector(0, 0, 0),
             axis=vp.vector(0, 0, 1),
-            radius=64, thickness=10
+            radius=0.064, thickness=0.008
         )
 
         outerRing = vp.ring(
             pos=vp.vector(0, 0, 0),
             axis=vp.vector(0, 0, 1),
-            radius=96, thickness=8
+            radius=0.096, thickness=0.008
         )
 
         sens1 = vp.box(
-            pos=vp.vector(-74, 0, 0),
-            length=3,
-            height=8,
-            width=8,
+            pos=vp.vector(-0.074, 0, 0),
+            length=0.003,
+            height=0.008,
+            width=0.008,
             axis=vp.vector(1, 0, 0),
             color=vp.color.yellow)
 
         sens2 = vp.box(
-            pos=vp.vector(37, 64, 0),
-            length=3,
-            height=8,
-            width=8,
-            axis=vp.vector(0.5, 0.866, 0),
+            pos=vp.vector(0.037, 0.064, 0),
+            length=0.003,
+            height=0.008,
+            width=0.008,
+            axis=vp.vector(0.005, 0.00866, 0),
             color=vp.color.cyan)
 
         sens3 = vp.box(
-            pos=vp.vector(37, -64, 0),
-            length=3,
-            height=8,
-            width=8,
-            axis=vp.vector(0.5, -0.866, 0),
+            pos=vp.vector(.037, -.064, 0),
+            length=0.003,
+            height=0.008,
+            width=0.008,
+            axis=vp.vector(0.005, -0.00866, 0),
             color=vp.color.magenta)
 
         mag1 = vp.cylinder(
-            pos=vp.vector(-88, 0, 0),
-            length=4,
-            height=8,
-            width=8,
-            axis=vp.vector(1, 0, 0),
+            pos=vp.vector(-0.088, 0, 0),
+            length=0.004,
+            height=0.008,
+            width=0.008,
+            axis=vp.vector(0.01, 0, 0),
             color=vp.color.yellow)
 
         mag2 = vp.cylinder(
-            pos=vp.vector(44, 76.2, 0),
-            length=4,
-            height=8,
-            width=8,
+            pos=vp.vector(0.044, .0762, 0),
+            length=0.004,
+            height=0.008,
+            width=0.008,
             axis=vp.vector(0.5, 0.866, 0),
             color=vp.color.cyan)
 
         mag3 = vp.cylinder(
-            pos=vp.vector(44, -76.2, 0),
-            length=4,
-            height=8,
-            width=8,
+            pos=vp.vector(0.044, -0.0762, 0),
+            length=0.004,
+            height=0.008,
+            width=0.008,
             axis=vp.vector(0.5, -0.866, 0),
             color=vp.color.magenta)
 
         inner = vp.compound([innerRing, sens1, sens2, sens3])
         self.outer = vp.compound([outerRing, mag1, mag2, mag3])
 
-        self.pointer1 = vp.arrow(pos=vp.vector(-34.2, 0, .0),      axis=vp.vector(-47, 0, .0), shaftwidth=1)
-        self.pointer2 = vp.arrow(pos=vp.vector(17.1, -29.6180688, .0),      axis=vp.vector(23.5, -40.7031939, .0), shaftwidth=1)
-        self.pointer3 = vp.arrow(pos=vp.vector(17.1, 29.6180688, .0),      axis=vp.vector(23.5, 40.7031939, .0), shaftwidth=1)
+        self.pointer1 = vp.arrow(pos=vp.vector(-.0342, 0, .0),      axis=vp.vector(-0.047, 0, .0), shaftwidth=0.001)
+        self.pointer2 = vp.arrow(pos=vp.vector(0.0171, -0.0296180688, .0),      axis=vp.vector(0.0235, -0.0407031939, .0), shaftwidth=0.001)
+        self.pointer3 = vp.arrow(pos=vp.vector(0.0171, 0.0296180688, .0),      axis=vp.vector(0.0235, 0.0407031939, .0), shaftwidth=0.001)
 
         self.oldRotationx = 0
         self.oldRotationy = 0

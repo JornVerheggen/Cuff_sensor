@@ -1,33 +1,18 @@
 import numpy as np
 import rmsd
 
-def RotMat(axis,rad):
-
-    if axis == 'x':
-        return np.array([[1.,0.,0.],
-                        [0.,np.cos(rad),-np.sin(rad)],
-                        [0.,np.sin(rad),np.cos(rad)]])
-    elif axis == 'y':
-        return np.array([[np.cos(rad),0,np.sin(rad)],
-                        [0,1,0],
-                        [-np.sin(rad),0,np.cos(rad)]])
-    elif axis == 'z':
-        return np.array([[np.cos(rad), -np.sin(rad), 0],
-                        [np.sin(rad),   np.cos(rad), 0],
-                        [0., 0., 1.]])
-
 class Solver:
 
     def __init__(self):
         #define sensor positions
-        self.sp1 = np.array([-34.2, 0, .0])
-        self.sp2 = np.array([17.1, -29.6180688, .0])
-        self.sp3 = np.array([17.1,  29.6180688, .0])
+        self.sp1 = np.array([-0.0342, .0, .0])
+        self.sp2 = np.array([0.0171, -0.0296180688, .0])
+        self.sp3 = np.array([0.0171,  0.0296180688, .0])
     
         #define magnet positions without any rotation/translation
-        self.mp1 = np.array([-47, 0, .0])
-        self.mp2 = np.array([23.5, -40.7031939, .0])
-        self.mp3 = np.array([23.5,  40.7031939, .0])
+        self.mp1 = np.array([-0.047, .0, .0])
+        self.mp2 = np.array([0.0235, -0.0407031939, .0])
+        self.mp3 = np.array([0.0235,  0.0407031939, .0])
 
         #define sensor rotation matrices
             # 90deg y-axis -> 180deg z-axis
@@ -55,15 +40,12 @@ class Solver:
                 np.array([[np.cos(np.pi/2),0,np.sin(np.pi/2)],
                 [0,1,0],
                 [-np.sin(np.pi/2),0,np.cos(np.pi/2)]]))
-            
-            #90deg y-axis
-        self.rm4 = np.array([
-                [np.cos(np.pi/2),0,np.sin(np.pi/2)],
-                [0,1,0],
-                [-np.sin(np.pi/2),0,np.cos(np.pi/2)]])
+        
+        #Offset variables
+        self.offset = np.array([0.0,0.0,0.0])
 
-        # a = RotMat('z',np.pi/7)
-        # b = RotMat ('x',np.pi/8)
+        # a = self.getRotMat('z',np.pi/7)
+        # b = self.getRotMat ('x',np.pi/8)
 
         # self.sp1 = np.matmul(self.sp1,np.matmul(a,b))
         # self.sp2 = np.matmul(self.sp2,np.matmul(a,b))
@@ -94,11 +76,11 @@ class Solver:
         if normalize:
             #Invert the z-axis so that value increases as magnet goes farther away from the sensor
             s1NormInput = s1Input
-            s1NormInput[2] =  (s1Input[2] * -1) + 53000
+            s1NormInput[2] =  (s1Input[2] * -1) + 43000
             s2NormInput = s2Input
-            s2NormInput[2] =  (s1Input[2] * -1) + 53000
+            s2NormInput[2] =  (s1Input[2] * -1) + 43000
             s3NormInput = s3Input
-            s3NormInput[2] =  (s1Input[2] * -1) + 53000
+            s3NormInput[2] =  (s1Input[2] * -1) + 43000
         else: 
             s1NormInput = s1Input            
             s2NormInput = s2Input            
@@ -118,6 +100,16 @@ class Solver:
         m2Pos = self.getMagPosition(self.sp2,v2,sf)
         m3Pos = self.getMagPosition(self.sp3,v3,sf)
 
+        #Include offset
+        m1Pos = m1Pos + self.offset
+        m2Pos = m2Pos + self.offset
+        m3Pos = m3Pos + self.offset
+
+        #Set a soft maximum of +/- 25mm for outliers
+        m1Pos = 25*np.tanh(m1Pos/25)
+        m2Pos = 25*np.tanh(m2Pos/25)
+        m3Pos = 25*np.tanh(m3Pos/25)
+
         outerTrans = self.getTranslation(m1Pos,m2Pos,m3Pos)
         outerRot = self.getRotation(m1Pos,m2Pos,m3Pos)
 
@@ -126,6 +118,21 @@ class Solver:
 
         return self.getHomogeneousTransform(outerTrans, outerRot)
 
+    def getRotMat(self,axis,rad):
+
+        if axis == 'x':
+            return np.array([[1.,0.,0.],
+                            [0.,np.cos(rad),-np.sin(rad)],
+                            [0.,np.sin(rad),np.cos(rad)]])
+        elif axis == 'y':
+            return np.array([[np.cos(rad),0,np.sin(rad)],
+                            [0,1,0],
+                            [-np.sin(rad),0,np.cos(rad)]])
+        elif axis == 'z':
+            return np.array([[np.cos(rad), -np.sin(rad), 0],
+                            [np.sin(rad),   np.cos(rad), 0],
+                            [0., 0., 1.]])
+    
     def normalizeInputData(self, xyz, multiplier=50000):
         xyzPosNeg = np.absolute(xyz)/xyz
         res = 1/np.sqrt(np.absolute(xyz)) * xyzPosNeg * multiplier
@@ -165,4 +172,12 @@ class Solver:
         homTrans[:3,3] = translation
         return homTrans
 
+    def setOffset(  self, 
+                    s1Input,
+                    s2Input,
+                    s3Input):
+        _,_, offsets = self.solve(s1Input,s2Input,s3Input,visualisationData = True)
+        self.offset = (offsets[0] + offsets[1] + offsets[2])/3
 
+        print("Offset created: "+str(self.offset))
+        
