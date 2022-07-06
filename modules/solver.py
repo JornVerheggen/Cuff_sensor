@@ -66,15 +66,18 @@ class Solver:
         v2 =  self.transformToRefrenceFrame(s2NormInput,self.rm2)
         v3 =  self.transformToRefrenceFrame(s3NormInput,self.rm3)
 
-        ocv1 = np.matmul(self.offCenterMat,v1)
-        ocv2 = np.matmul(self.offCenterMat,v2)
-        ocv3 = np.matmul(self.offCenterMat,v3)
+        # ocv1 = np.matmul(self.offCenterMat,v1)
+        # ocv2 = np.matmul(self.offCenterMat,v2)
+        # ocv3 = np.matmul(self.offCenterMat,v3)
 
-        sf12 = np.absolute(self.getScaleFactor(self.ocsp1,ocv1,self.ocmp1,self.ocsp2,ocv2,self.ocmp2))
-        sf23 = np.absolute(self.getScaleFactor(self.ocsp2,ocv2,self.ocmp2,self.ocsp3,ocv3,self.ocmp3))
-        sf31 = np.absolute(self.getScaleFactor(self.ocsp3,ocv3,self.ocmp3,self.ocsp1,ocv1,self.ocmp1))
+        # sf12 = np.absolute(self.getScaleFactor(self.ocsp1,ocv1,self.ocmp1,self.ocsp2,ocv2,self.ocmp2))
+        # sf23 = np.absolute(self.getScaleFactor(self.ocsp2,ocv2,self.ocmp2,self.ocsp3,ocv3,self.ocmp3))
+        # sf31 = np.absolute(self.getScaleFactor(self.ocsp3,ocv3,self.ocmp3,self.ocsp1,ocv1,self.ocmp1))
 
-        sf = self.getMeanScaleFactor(sf12,sf23,sf31)
+
+        # sf = self.getMeanScaleFactor(sf12,sf23,sf31)
+        sf = 4.2e-7
+
 
         m1Pos = self.getMagPosition(self.sp1,v1,sf)
         m2Pos = self.getMagPosition(self.sp2,v2,sf)

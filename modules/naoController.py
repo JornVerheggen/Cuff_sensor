@@ -102,3 +102,6 @@ class NaoController:
     
     def say(self,val):
         self.ttsProxy.say(val)
+
+    def getSensorValue(self,name):
+        return self.memoryProxy.getData(name)

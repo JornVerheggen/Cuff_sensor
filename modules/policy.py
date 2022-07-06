@@ -1,10 +1,9 @@
-from re import S
-from turtle import ycor
 import numpy as np
-from naoController import NaoController
-import time as t
-from tqdm import trange
-import pickle
+# from naoController import NaoController
+# import time as t
+# from tqdm import trange
+# import pickle
+import matplotlib.pyplot as plt
 
 class Policy:
     def __init__(self,sampleRate=20,enableNaoController = True):
@@ -113,3 +112,44 @@ class circlePolicy(Policy):
             self.width += xyz[1]
             self.height -= xyz[2]
         self.createPath()
+
+class antiprism(Policy):
+
+    def __init__(self,center, width, height,depth1,depth2,speed,points):
+        #Policy.__init__(self,enableNaoController=False)
+        self.center = center
+        self.width = width
+        self.height = height
+        self.depth1 = depth1
+        self.depth2 = depth2
+        self.speed = speed
+        self.points = points
+
+    def createPath(self):
+        self.vertecies = []
+        angle = 2*np.pi / (self.points*2)
+        front = False
+        for p in range(self.points*2):
+
+            y = np.cos(angle*p) * self.width/2
+            z = np.sin(angle*p) * self.height/2
+
+            if front:
+                front = False
+                x = self.depth1
+                self.vertecies.append((x,y,z))
+            else:
+                front = True
+                x = self.depth2
+                self.vertecies.append((x,y,z))
+        self.vertecies.append(self.vertecies[0])
+
+# if __name__ == '__main__':
+#     p1= antiprism((0,0,0),5,5,1,-1,0.001,4)
+#     p1.createPath()
+#     print(p1.vertecies)
+#     x,y,z = zip(*p1.vertecies)
+#     fig = plt.figure()
+#     ax = plt.axes(projection="3d")
+#     ax.plot3D(x,y,z)
+#     plt.show()
