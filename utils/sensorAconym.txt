@@ -26,3 +26,6 @@ Intuitive Transformation Sensor
 
 IRIS.
 Intuitive Robotic Interaction Sensor
+
+KRIS
+kineasthetic, Robot, Interaction, system, 

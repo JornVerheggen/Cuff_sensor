@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0,'C:/Users/jorn-/Documents/school/y2/thesis/cuffling/code/Cuff_sensor')
+sys.path.insert(0,'C:/Users/jorn-/Documents/school/y2/thesis/cuffling/code/Cuff_sensor/modules')
 import socket
 from visualize import Viz
 from solver import Solver
@@ -22,7 +22,7 @@ while True:
     s2Input = np.array([float(row[5]),float(row[6]),float(row[7])],dtype=np.float32)
     s3Input = np.array([float(row[8]),float(row[9]),float(row[10])],dtype=np.float32)
 
-    trans,aAngle,magPositions = solver.solve( s1Input,
+    homTrans, trans,aAngle,magPositions = solver.solve( s1Input,
                                                 s2Input,
                                                 s3Input,
                                                 normalize= False, 
@@ -31,6 +31,7 @@ while True:
     vis.setPosition(trans)
     vis.setRotation(aAngle)
     vis.setMagPositions(magPositions)
+    vis.setHandPointer(homTrans)
 
-    if np.all(solver.offset) == np.all(np.array([0.0,0.0,0.0])):
-        solver.setOffset(s1Input,s2Input,s3Input)
+    # if np.all(solver.offset) == np.all(np.array([0.0,0.0,0.0])):
+    #     solver.setOffset(s1Input,s2Input,s3Input)

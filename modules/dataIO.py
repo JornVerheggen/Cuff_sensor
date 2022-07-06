@@ -3,7 +3,7 @@ from multiprocessing import Process, Queue
 import numpy as np
 import socket
 
-class dataIO:
+class DataIO:
     """
     Creates a seperate thread that continiously gets the latest sensor values and stores them in shared memory
     """

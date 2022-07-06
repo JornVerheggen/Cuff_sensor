@@ -7,16 +7,17 @@ import almath
 from naoqi import ALProxy
 import numpy as np
 
-class naoController:
+class NaoController:
 
     def __init__(self,robotIP='192.168.0.210',PORT=9559):
 
         self.motionProxy  = ALProxy("ALMotion", robotIP, PORT)
         self.postureProxy = ALProxy("ALRobotPosture", robotIP, PORT)
         self.memoryProxy = ALProxy("ALMemory", robotIP, PORT)
+        self.ttsProxy = ALProxy ("ALTextToSpeech",robotIP, PORT)
         self.effector   = "LArm"
         self.frame      = motion.FRAME_TORSO
-        self.axisMask   = almath.AXIS_MASK_VEL # just control position
+        self.axisMask   = 63 # Control position and rotation
         self.useSensorValues = False
 
 
@@ -55,7 +56,14 @@ class naoController:
         path = [transform]
         times      = [interval] # seconds
 
-        self.motionProxy.transformInterpolations(self.effector, self.frame, path, self.axisMask, times)
+        self.motionProxy.transformInterpolations(self.effector, self.frame, path, 63, times)
+
+    def moveTo6x(self,transform, interval = 0.1):
+        transform = [float(x) for x in transform]
+        path = [transform]
+        times = [interval] # seconds
+
+        self.motionProxy.positionInterpolations(self.effector, self.frame, path, 63, times)      
 
     def playPath(self,path,sampleTime):
         times = [sampleTime]
@@ -80,5 +88,17 @@ class naoController:
     def getlHandRotation(self):
         return self.memoryProxy.getData("Device/SubDeviceList/LWristYaw/Position/Sensor/Value")   
     
+    def getFootBumper(self):
+        return self.memoryProxy.getData("Device/SubDeviceList/LFoot/Bumper/Right/Sensor/Value") or \
+               self.memoryProxy.getData("Device/SubDeviceList/LFoot/Bumper/Left/Sensor/Value") or \
+               self.memoryProxy.getData("Device/SubDeviceList/RFoot/Bumper/Right/Sensor/Value") or \
+               self.memoryProxy.getData("Device/SubDeviceList/RFoot/Bumper/Left/Sensor/Value")
+                   
     def rest(self):
         self.motionProxy.rest()
+    
+    def setStiffness(self,val):
+        self.motionProxy.stiffnessInterpolation(self.effector, val,1.0)
+    
+    def say(self,val):
+        self.ttsProxy.say(val)

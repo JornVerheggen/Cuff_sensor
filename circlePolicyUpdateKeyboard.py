@@ -1,19 +1,19 @@
-from keyBoardHandler import KeyboardHandler
-from policy import circlePolicy
+from modules.keyBoardHandler import KeyboardHandler
+from modules.policy import circlePolicy
 import time as t
 import math as m
 from multiprocessing import Process, Queue
 
 def batchHandler(queue,startPos):
-    from naoController import naoController
-    naoController = naoController()
-    naoController.setup(startingPosition=startPos)
+    from modules.naoController import NaoController
+    nc = NaoController()
+    nc.setup(startingPosition=startPos)
 
     while True:
         if not queue.empty():
             path,times = queue.get()
         try:
-            naoController.playInterval(path,times)
+            nc.playInterval(path,times)
         except:
             pass
         
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     xyz = [0,0,0]
 
     center = (0.1695,0.083,0.15)
-    policy = circlePolicy(center,.1,.1,0.0,0.05)
+    policy = circlePolicy(center,.1,.1,0.0,m.radians(100),0.15)
     policy.createPath()
     timePerStep = policy.sampleTime
     startPos = policy.path[0]
@@ -68,6 +68,6 @@ if __name__ == "__main__":
                 policy.updatePath(xyz,q)
 
             q = min(int(startBatch/(len(policy.path)/4)) + 1,4)
-            print("Q: "+str(q) + ", Width "+str(policy.width)+", Height: "+str(policy.height),", Depth: "+str(policy.depth))
+            print("Q: "+str(q) + ", Width "+str(policy.width)+", Height: "+str(policy.height),", Pitch: "+str(m.degrees(policy.pitch)))
 
             queue.put(newBatch)

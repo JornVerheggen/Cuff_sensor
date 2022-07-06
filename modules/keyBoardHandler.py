@@ -2,32 +2,13 @@ import keyboard
 import math as m
 import numpy as np
 import time as t
-
-
-def getRotMat(axis,rad):
-
-    if axis == 'x':
-        return np.array([[1.,0.,0.,0],
-                        [0.,np.cos(rad),-np.sin(rad),0],
-                        [0.,np.sin(rad),np.cos(rad),0],
-                        [0,0,0,1]])
-    elif axis == 'y':
-        return np.array([[np.cos(rad),0,np.sin(rad),0],
-                        [0,1,0,0],
-                        [-np.sin(rad),0,np.cos(rad),0],
-                        [0,0,0,1]])
-    elif axis == 'z':
-        return np.array([[np.cos(rad), -np.sin(rad), 0,0],
-                        [np.sin(rad),   np.cos(rad), 0,0],
-                        [0., 0., 1.,0],
-                        [0,0,0,1]])
-
+from rotMat import getRotmat4
 
 class KeyboardHandler:
 
     def __init__(self):
-        self.radPerSep =  m.radians(5) # 3degrees
-        self.mPerStep = .01 # 1mm
+        self.radPerStep =  m.radians(10)
+        self.mPerStep = .1 # 1cm
         self.collectionCounter = 0
         self.xyz = [0,0,0]
         self.rxyz = [0,0,0]
@@ -93,6 +74,16 @@ class KeyboardHandler:
         else:
             a = False
 
+        if keyboard.is_pressed("q"):
+            q = True
+        else:
+            q = False
+
+        if keyboard.is_pressed("e"):
+            e = True
+        else:
+            e = False
+
         if rightShift and not slash:
             result['x'] = 1
 
@@ -110,6 +101,12 @@ class KeyboardHandler:
 
         if down and not up:
             result['z'] = -1
+
+        if q and not e:
+            result['rx'] = 1
+
+        if e and not q:
+            result['rx'] = -1
         
         if a and not d:
             result['rz'] = 1
@@ -128,17 +125,18 @@ class KeyboardHandler:
     def getModTransform(self,xyz,rxyz):
         newTransform = np.identity(4)
 
-        newTransform = np.matmul(newTransform,getRotMat('x',xyz[0]*self.radPerStep))
-        newTransform = np.matmul(newTransform,getRotMat('y',xyz[1]*self.radPerStep))
-        newTransform = np.matmul(newTransform,getRotMat('z',xyz[2]*self.radPerStep))
+        newTransform = np.matmul(newTransform,getRotmat4('x',rxyz[0]*self.radPerStep))
+        newTransform = np.matmul(newTransform,getRotmat4('y',rxyz[1]*self.radPerStep))
+        newTransform = np.matmul(newTransform,getRotmat4('z',rxyz[2]*self.radPerStep))
 
         trans = np.identity(4)
-        trans[0,3] = rxyz[0] * self.mPerStep
-        trans[1,3] = rxyz[1] * self.mPerStep
-        trans[2,3] = rxyz[2] * self.mPerStep
+        trans[0,3] = xyz[0] * self.mPerStep
+        trans[1,3] = xyz[1] * self.mPerStep
+        trans[2,3] = xyz[2] * self.mPerStep
 
-        newTransform = np.matmul(newTransform,trans)
-    
+        newTransform = np.matmul(newTransform, trans)
+        return newTransform
+
     def collectInput(self):
 
         if self.collectionCounter > 0:
@@ -147,7 +145,7 @@ class KeyboardHandler:
             for i in self.xyz:
                 xyz.append((float(i)/self.collectionCounter) * self.mPerStep)
             for i in self.rxyz:
-                rxyz.append((float(i)/self.collectionCounter) * self.radPerSep)
+                rxyz.append((float(i)/self.collectionCounter) * self.radPerStep)
         else:
             xyz = [0,0,0]
             rxyz = [0,0,0]
@@ -155,8 +153,6 @@ class KeyboardHandler:
         self.collectionCounter = 0
         self.xyz = [0,0,0]
         self.rxyz = [0,0,0]
-
-
 
         return (xyz,rxyz)
 
@@ -170,3 +166,16 @@ class KeyboardHandler:
         self.rxyz[0] += keyBoardInput['rx']
         self.rxyz[1] += keyBoardInput['ry']
         self.rxyz[2] += keyBoardInput['rz']
+    
+    def getSingleTransform(self):
+        inputs = self.getKeyboardInfo()
+        xyz = [0,0,0]
+        rxyz = [0,0,0]
+        xyz[0] = inputs['x'] * self.mPerStep
+        xyz[1] = inputs['y'] * self.mPerStep
+        xyz[2] = inputs['z'] * self.mPerStep
+
+        rxyz[0] = inputs['rx'] * self.radPerStep
+        rxyz[1] = inputs['ry'] * self.radPerStep
+        rxyz[2] = inputs['rz'] * self.radPerStep
+        return self.getModTransform(xyz,rxyz)
