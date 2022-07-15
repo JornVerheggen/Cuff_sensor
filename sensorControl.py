@@ -23,7 +23,6 @@ def getThresholdedValue(x,thresholdVal):
 def softClip(x,clipVal):
     return clipVal*np.tanh(x/clipVal)
 
-
 def getHand2SensHom(handYaw):
     result = np.identity(4)
     result[:3,:3] = getRotmat3('x',handYaw) #handYaw has to be positive
@@ -33,9 +32,6 @@ def getHand2SensHom(handYaw):
     trans =  np.array([0.05775+0.015,0,0.01231])
     result[:3,3] = trans
     return result
-
-
-
 
 if __name__ == '__main__':
     UDP_PORT = 56200
@@ -74,7 +70,7 @@ if __name__ == '__main__':
         sensTTrans = sensT[:3,3]
 
         newSensTTrans = sensTTrans + offsetTTrans
-        newSensTTrans[0] = getThresholdedValue(sensTTrans[0],0.002)*-3
+        newSensTTrans[0] = getThresholdedValue(sensTTrans[0],0.003)*-5
         newSensTTrans[1] = 0.
         newSensTTrans[2] = 0.
 

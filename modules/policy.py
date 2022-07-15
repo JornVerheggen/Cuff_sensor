@@ -1,8 +1,8 @@
 import numpy as np
-# from naoController import NaoController
-# import time as t
-# from tqdm import trange
-# import pickle
+from naoController import NaoController
+import time as t
+from tqdm import trange
+import pickle
 import matplotlib.pyplot as plt
 
 class Policy:
@@ -25,7 +25,7 @@ class Policy:
         fp.close()
         print('Policy saved')
 
-    def playPathSmooth(self,iterations):
+    def playPathSmooth(self,iterations=1):
         self.nc.setup(startingPosition=self.path[0])
         for i in range(iterations):
             print("playing path iteration: "+ str(i))
@@ -54,7 +54,7 @@ class Policy:
 
         for i in trange(int(totalTime/self.sampleTime)):
             t.sleep(self.sampleTime)
-            lHandT = self.nc.getOrientation('LArm')
+            lHandT = self.nc.getOrientation('LArm',useSensors=True)
             self.path.append(lHandT)
     
     def updatePath(self,update, t):
@@ -113,6 +113,24 @@ class circlePolicy(Policy):
             self.height -= xyz[2]
         self.createPath()
 
+    def updateSpeed(self,xyz,t1,t2):
+        pointA = self.path[t1][:3,3]
+        pointB = self.path[t2][:3,3]
+
+        direction = np.linalg.norm(pointB-pointA)
+
+        if direction.all() != np.array([0.,0.,0.]).all(): 
+            directionFactor = np.arccos(np.dot(direction,xyz)/(np.linalg.norm(direction) * np.linalg.norm(xyz)))
+            directionFactor /= np.pi
+            directionFactor -= 0.5
+            directionFactor *= -2
+        else:
+            directionFactor = np.array([0.,0.,0.])
+        
+        speedFactor = np.linalg.norm(xyz)
+
+        self.speed = self.speed + (speedFactor * directionFactor) * .1
+
 class antiprism(Policy):
 
     def __init__(self,center, width, height,depth1,depth2,speed,points):
@@ -125,7 +143,7 @@ class antiprism(Policy):
         self.speed = speed
         self.points = points
 
-    def createPath(self):
+    def createVertecies(self):
         self.vertecies = []
         angle = 2*np.pi / (self.points*2)
         front = False
@@ -137,19 +155,28 @@ class antiprism(Policy):
             if front:
                 front = False
                 x = self.depth1
-                self.vertecies.append((x,y,z))
+                self.vertecies.append(np.array([x,y,z]))
             else:
                 front = True
                 x = self.depth2
-                self.vertecies.append((x,y,z))
+                self.vertecies.append(np.array[(x,y,z)])
         self.vertecies.append(self.vertecies[0])
 
-# if __name__ == '__main__':
-#     p1= antiprism((0,0,0),5,5,1,-1,0.001,4)
-#     p1.createPath()
-#     print(p1.vertecies)
-#     x,y,z = zip(*p1.vertecies)
-#     fig = plt.figure()
-#     ax = plt.axes(projection="3d")
-#     ax.plot3D(x,y,z)
-#     plt.show()
+    def createPath(self):
+        self.path = []
+        for i in range(len(self.vertecies)):
+            beginPoint = self.vertecies[i-1]
+            endPoint = self.vertecies[i]
+            distance = np.linalg.norm(beginPoint-endPoint)
+            timePerPoint = distance/self.speed
+
+            pointsInSection = timePerPoint
+            
+            
+
+
+if __name__ == '__main__':
+    p1 = Policy(sampleRate=40)
+    p1.recordPath(45)
+    p1.playPathSmooth()
+    p1.savePath('stopExperiment4')

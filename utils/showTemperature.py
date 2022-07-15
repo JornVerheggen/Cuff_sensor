@@ -8,7 +8,7 @@ from naoController import NaoController
 nc = NaoController()
 print('Left arm temperature in degrees')
 print('')
-print("Shoulder pitch\t Shoulder roll\t Elboy yaw\t elbow roll\t wrist yaw")
+print("Shoulder pitch\t Shoulder roll\t Elbow yaw\t Elbow roll\t Wrist yaw")
 print('______________\t _____________\t _________\t __________\t _________')
 while True:
     t.sleep(1.5)

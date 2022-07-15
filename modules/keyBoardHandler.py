@@ -91,10 +91,10 @@ class KeyboardHandler:
             result['x'] = -1
 
         if left and not right:
-            result['y'] = 1
+            result['y'] = -1
 
         if right and not left:
-            result['y'] = -1
+            result['y'] = 1
 
         if up and not down:
             result['z'] = 1
@@ -154,7 +154,7 @@ class KeyboardHandler:
         self.xyz = [0,0,0]
         self.rxyz = [0,0,0]
 
-        return (xyz,rxyz)
+        return (np.array(xyz),np.array(rxyz))
 
     def gatherInput(self):
         self.collectionCounter += 1 

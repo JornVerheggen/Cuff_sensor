@@ -15,6 +15,7 @@ class NaoController:
         self.postureProxy = ALProxy("ALRobotPosture", robotIP, PORT)
         self.memoryProxy = ALProxy("ALMemory", robotIP, PORT)
         self.ttsProxy = ALProxy ("ALTextToSpeech",robotIP, PORT)
+        self.connectionProxy = ALProxy("ALConnectionManager",robotIP, PORT)
         self.effector   = "LArm"
         self.frame      = motion.FRAME_TORSO
         self.axisMask   = 63 # Control position and rotation
@@ -81,9 +82,9 @@ class NaoController:
     def playInterval(self,path,times):
         self.motionProxy.transformInterpolations(self.effector, self.frame, path, self.axisMask, times)
 
-    def getOrientation(self,A):
+    def getOrientation(self,A,useSensors = False):
         #chainName = A, worldFrame =1, useSensors = True
-        return np.array(self.motionProxy.getTransform(A, self.frame, False)).reshape((4,4))
+        return np.array(self.motionProxy.getTransform(A, self.frame, useSensors)).reshape((4,4))
     
     def getlHandRotation(self):
         return self.memoryProxy.getData("Device/SubDeviceList/LWristYaw/Position/Sensor/Value")   
@@ -105,3 +106,8 @@ class NaoController:
 
     def getSensorValue(self,name):
         return self.memoryProxy.getData(name)
+    
+    def getConnections(self):
+        self.connectionProxy.scan()
+        services = self.connectionProxy.services()
+        return services

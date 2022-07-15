@@ -3,7 +3,9 @@ from modules.policy import circlePolicy
 import time as t
 import math as m
 from multiprocessing import Process, Queue
+import numpy as np
 
+#Used to not block the tread 
 def batchHandler(queue,startPos):
     from modules.naoController import NaoController
     nc = NaoController()
@@ -20,8 +22,7 @@ def batchHandler(queue,startPos):
 
 if __name__ == "__main__":
     keyboardHandler = KeyboardHandler()
-    numberOfIterations = 10
-    batchSize = 6
+    batchSize = 10
     xyz = [0,0,0]
 
     center = (0.1695,0.083,0.15)
@@ -32,7 +33,7 @@ if __name__ == "__main__":
 
     queue = Queue()
 
-    #sampleTime 0.1, batchSize 5
+    #
     times = [timePerStep]
     for i in range(batchSize-1):
         times.append(times[-1]+timePerStep)
@@ -41,7 +42,7 @@ if __name__ == "__main__":
     p.start()
     t.sleep(.2)
 
-    for iteration in range(numberOfIterations):
+    while True:
 
         #split path up into batches
         for i in range(0,len(policy.path),batchSize):
