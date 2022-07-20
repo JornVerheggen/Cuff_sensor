@@ -21,7 +21,7 @@ outside = np.array([[ 0.24125169, -0.97039074,  0.01180979,  0.03397589],
 positions = [inside,outside]
 print("Positions, 0 - 1")
 positionIndex = int(raw_input('Position number: '))
-nc = NaoController(robotIP = '192.168.0.121')
+nc = NaoController(robotIP = '192.168.0.238')
 
 nc.setup(startingPosition=positions[positionIndex])
 

@@ -8,9 +8,12 @@ import pickle
 import time as t
 import math as m
 
-def batchHandler(queue,startPos):
+def batchHandler(queue,startPos,method):
     from modules.naoController import NaoController
-    nc = NaoController()
+    if method == 'keyboard':
+        nc = NaoController(robotIP="192.168.0.121")
+    else:
+        nc = NaoController()
     nc.setup(startingPosition=startPos)
     nc.say("start")
     while True:
@@ -33,10 +36,12 @@ class CircleStopTest:
         self.points = len(self.path)
 
         #Set up modules
-        self.nc = NaoController()
+
         if self.method == 'keyboard':
             self.kbh = KeyboardHandler()
+            self.nc = NaoController(robotIP="192.168.0.121")
         if self.method == 'KRIS':
+            self.nc = NaoController()
             self.krisHandler = KRISHandler()
 
     def gatherKeyboardInput(self,tEnd):
@@ -93,7 +98,7 @@ class CircleStopTest:
 
         self.queue = Queue()
         startPos = self.path[0]
-        p = Process(target=batchHandler,args=((self.queue,startPos)))
+        p = Process(target=batchHandler,args=((self.queue,startPos,self.method)))
         p.start()
         t.sleep(10)
 

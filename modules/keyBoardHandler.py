@@ -7,7 +7,7 @@ from rotMat import getRotmat4
 class KeyboardHandler:
 
     def __init__(self):
-        self.radPerStep =  m.radians(10)
+        self.radPerStep =  m.radians(20)
         self.mPerStep = .1 # 1cm
         self.collectionCounter = 0
         self.xyz = [0,0,0]

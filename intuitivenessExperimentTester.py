@@ -1,8 +1,5 @@
-from ipaddress import ip_address
 from modules.KRISHandler import KRISHandler
 from modules.naoController import NaoController
-from modules.dataIO import DataIO
-from modules.solver import Solver
 from modules.keyBoardHandler import KeyboardHandler
 from modules.rotMat import getEuler4 ,mm
 
@@ -43,6 +40,7 @@ def freeMoveKRIS():
 #DEFINE HELPER FUNCTIONS
 def closeTo(A,B,threshold):
     dist = ((A[0,3] - B[0,3])**2 + (A[1,3] - B[1,3])**2 +(A[2,3] - B[2,3])**2)**.5
+    print(dist)
     if dist <= threshold:
         return True
     else:
@@ -87,8 +85,9 @@ if __name__ == "__main__":
         t.sleep(1)
     if method == 'keyboard':
         keyboardHandler = KeyboardHandler()
-        nc = NaoController(ip_address = "192.168.0.1")
-
+        nc = NaoController(robotIP = "192.168.0.121")
+    if method == 'touch':
+        nc = NaoController(robotIP = "192.168.0.121")
     #SETUP EXPERIMENT
     path = "C:/Users/jorn-/Documents/school/y2/thesis/cuffling/code/Cuff_sensor/data/IntuitivenessExperiment/"+str(participantNumber)+ '/'
     if not os.path.isdir(path):

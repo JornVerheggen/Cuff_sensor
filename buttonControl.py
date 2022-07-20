@@ -3,7 +3,7 @@ from modules.keyBoardHandler import KeyboardHandler
 import numpy as np 
 
 if __name__ == '__main__':
-    nc = NaoController() #Create naoController object
+    nc = NaoController(robotIP='192.168.0.121') #Create naoController object
     kbh = KeyboardHandler() #Create  KeyboardHandler object
 
     #move robot arm to front to start moving

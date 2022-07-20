@@ -54,6 +54,10 @@ class KRISHandler():
         result[:3,3] = trans
         return result
 
+    def getRawInput(self):
+        _,_,s1Input,s2Input,s3Input = self.dataIO.getFormattedData()
+        return self.solver.solve(s1Input,s2Input,s3Input,normalize= False)
+
     def getSingleTransform(self):
         #Get transformation of left arm with respect to torso frame
         torso2Hand = self.nc.getOrientation('LArm')

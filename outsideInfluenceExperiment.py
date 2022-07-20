@@ -1,78 +1,100 @@
-import numpy as np
-from naoController import naoController
+from modules.KRISHandler import KRISHandler
+from modules.rotMat import getEuler4
 from multiprocessing import Process
-from modules.dataIO import dataIO
-from solver import Solver
-from scipy.spatial.transform import rotation
+import numpy as np
 import time as t
-import math
 
-
-def rotationMatrixToEulerAngles(R) :
-    sy = math.sqrt(R[0,0] * R[0,0] +  R[1,0] * R[1,0])
-    singular = sy < 1e-6
-    if  not singular :
-        x = math.atan2(R[2,1] , R[2,2])
-        y = math.atan2(-R[2,0], sy)
-        z = math.atan2(R[1,0], R[0,0])
-    else :
-        x = math.atan2(-R[1,2], R[1,1])
-        y = math.atan2(-R[2,0], sy)
-        z = 0
-    return np.array([x, y, z])
+def homTrans2String(A):
+    x,y,z,rx,ry,rz = getEuler4(A)
+    result =  (str(x)  + ';')
+    result += (str(y)  + ';')
+    result += (str(z)  + ';')
+    result += (str(rx) + ';')
+    result += (str(ry) + ';')
+    result += (str(rz) + '\n')
+    return result
 
 def naoRunner():
-    nc = naoController()
-    path = [
-        np.array([[ 0.79884082, -0.35174501,  0.48798442,  0.0954641 ],
-            [-0.21822879,  0.58649635,  0.7799989 ,  0.07648443],
-            [-0.56056178, -0.7295872 ,  0.39175633, -0.07329781],
-            [ 0.        ,  0.        ,  0.        ,  1.        ]]),
-        np.array([[ 0.36628917,  0.05258733, -0.92901385,  0.11161593],
-            [ 0.30095661,  0.93804264,  0.17175883,  0.20950635],
-            [ 0.88048691, -0.34250623,  0.32776836,  0.15709892],
-            [ 0.        ,  0.        ,  0.        ,  1.        ]]),
-        np.array([[ 0.28894848,  0.19949877, -0.93632746,  0.14128694],
-            [-0.47161183,  0.88079935,  0.0421294 ,  0.02567818],
-            [ 0.83312142,  0.42940986,  0.34859163,  0.15133962],
-            [ 0.        ,  0.        ,  0.        ,  1.        ]]),
-        np.array([[ 0.9618299 , -0.0883936 ,  0.2589781 ,  0.1385892 ],
-            [-0.12405667,  0.70270324,  0.70058405,  0.14787301],
-            [-0.24391189, -0.70597064,  0.66491514, -0.00611768],
-            [ 0.        ,  0.        ,  0.        ,  1.        ]])]
+    from modules.naoController import NaoController
+    nc = NaoController()
+
+    base =     np.array([[ 0.97951078,  0.19790787, -0.03729767,  0.18621776],
+                         [-0.19608623,  0.97943777,  0.04745132,  0.10159862],
+                         [ 0.04592174, -0.03916552,  0.99817687,  0.02211484],
+                         [ 0.        ,  0.        ,  0.        ,  1.        ]])
+
+    right =    np.array([[ 0.76143301,  0.63996649, -0.10325956,  0.15688077],
+                         [-0.62322402,  0.76652527,  0.15501875,  0.02482015],
+                         [ 0.17835787, -0.05368255,  0.98250008,  0.02766118],
+                         [ 0.        ,  0.        ,  0.        ,  1.        ]])
+
+    left =     np.array([[ 0.88827699, -0.44554088, -0.11161256,  0.14922285],
+                         [ 0.45373449,  0.88893741,  0.0625726 ,  0.17671253],
+                         [ 0.07133793, -0.10622427,  0.99177992,  0.00492496],
+                         [ 0.        ,  0.        ,  0.        ,  1.        ]])
+
+    up =       np.array([[ 0.50154507,  0.0811446 , -0.86131757,  0.16801919],
+                         [-0.08893348,  0.99515307,  0.04196727,  0.09119017],
+                         [ 0.8605482 ,  0.05555148,  0.50633061,  0.15759484],
+                         [ 0.        ,  0.        ,  0.        ,  1.        ]])
+
+    down =     np.array([[ 0.72986841,  0.06968322,  0.68002677,  0.12850268,],
+                         [-0.09704909,  0.99527717,  0.00217482,  0.09287015,],
+                         [-0.67666352, -0.06758331,  0.73318404, -0.07712643,],
+                         [ 0.        ,  0.        ,  0.        ,  1.        ,]])
+
+    back =     np.array([[ 0.99954295, -0.02168957,  0.02105845,  0.11544158,],
+                         [ 0.01999845,  0.99679637,  0.07744043,  0.12532535,],
+                         [-0.02267064, -0.07698389,  0.99677455, -0.01765619,],
+                         [ 0.        ,  0.        ,  0.        ,  1.        ,]])
+
+    forward =  np.array([[ 0.99259257,  0.1064648 ,  0.05852627,  0.20487104,],
+                         [-0.10749128,  0.99409783,  0.01467099,  0.09363957,],
+                         [-0.0566189 , -0.02085338,  0.99817812,  0.03042427,],
+                         [ 0.        ,  0.        ,  0.        ,  1.        ,]])
+
+    path = [base,left,base,right,base,up,base,down,base,forward,base,back]
 
     nc.setup()
+    print("run1: " + str(t.time()))
     nc.playPath(path,2.0)
+    print("run2: " + str(t.time()))
+    nc.playPath(path,2.0)
+    print("run3: " + str(t.time()))
+    nc.playPath(path,2.0)
+    print("run4: " + str(t.time()))
+    nc.playPath(path,2.0)
+    print("run5: " + str(t.time()))
+    nc.playPath(path,2.0)
+    print("run6: " + str(t.time()))
+    nc.playPath(path,2.0)
+    print("run7: " + str(t.time()))
+    nc.playPath(path,2.0)
+    print("run8: " + str(t.time()))
+    nc.playPath(path,2.0)
+    print("run9: " + str(t.time()))
+    nc.playPath(path,2.0)
+    print("run10: " + str(t.time()))
+    nc.playPath(path,2.0)
+    print("end: " + str(t.time()))
     nc.rest()
 
 if __name__ == "__main__":
+
+
     p = Process(target=naoRunner)
     p.start()
 
-    # UDP_PORT = 56200
-    # dataIO = dataIO(UDP_PORT) #create dataIO object
-    # dataIO.startProcess() #start data reading tread
+    kh = KRISHandler()
 
-    # solver = Solver() #Create solver object
+    fp1 = open('./data/outsideInfluenceExperiment/transFormData.csv', 'w')
+    while True:
+        rawInput = kh.getRawInput()
+        line = str(t.time())+";"
+        line += homTrans2String(rawInput)
+        fp1.write(line)
+        t.sleep(0.05)
 
-    # fp1 = open("ousideInfluence.csv",'w')
-    # fp1.write("t;x;y;z;rx;ry;rz\n")
+    
 
-    # while True:
-    #     side,time,s1Input,s2Input,s3Input = dataIO.getFormattedData()
-    #     sensT = solver.solve(s1Input,s2Input,s3Input,normalize= False)
-
-    #     x = sensT[0,3]
-    #     y = sensT[1,3]
-    #     z = sensT[2,3]
-
-    #     rotmat = sensT[:3,:3]
-    #     r = rotationMatrixToEulerAngles(rotmat)
-
-    #     rx = r[0]
-    #     ry = r[1]
-    #     rz = r[2]
-    #     fp1.write(str(time)+';'+str(x)+';'+str(y)+';'+str(z)+';'+str(rx)+';'+str(ry)+';'+str(rz)+';\n')
-        
-    #     t.sleep(0.05)
         
